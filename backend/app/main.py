@@ -68,7 +68,7 @@ def ingest_default_invoices(base_id: str = "default"):
 
     for f in files:
         file_path = os.path.join(INVOICES_DIR, f)
-        doc_id = f"doc_{uuid.uuid4().hex[:8]}"
+        doc_id = f"doc_{f.replace('.pdf', '')}"
         trace = process_pdf_document(file_path, f, doc_id, base_id)
         results.append(trace)
 
@@ -183,12 +183,13 @@ def query_rag(req: QueryRequest):
     retrieved_chunks = db_store.search_similar(
         query_embedding=question_embedding,
         top_k=top_k,
-        base_id=req.base_id or "default"
+        base_id=req.base_id or "default",
+        query_text=question
     )
 
     # 4. Verificação de Ausência de Dados (Regra Anti-Alucinação Estrita)
-    # Exige que o candidato mais relevante tenha pelo menos 0.72 de similaridade semântica
-    if not retrieved_chunks or retrieved_chunks[0]["similarity"] < 0.72:
+    # Limiar calibrado para 0.60 para consultas em português com modelo FastEmbed
+    if not retrieved_chunks or retrieved_chunks[0]["similarity"] < 0.60:
         return {
             "question": question,
             "pipeline": {
