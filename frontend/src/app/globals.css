@@ -1,0 +1,101 @@
+@import "tailwindcss";
+
+:root {
+  --background: #090d16;
+  --foreground: #f3f4f6;
+  --card-bg: rgba(17, 24, 39, 0.8);
+  --card-border: rgba(255, 255, 255, 0.08);
+  --accent-primary: #3b82f6;
+  --accent-cyan: #06b6d4;
+  --accent-emerald: #10b981;
+  --accent-purple: #8b5cf6;
+  --accent-amber: #f59e0b;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.08) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(139, 92, 246, 0.08) 0px, transparent 50%),
+    radial-gradient(at 50% 100%, rgba(6, 182, 212, 0.05) 0px, transparent 50%);
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+
+/* Custom Glassmorphism Card */
+.glass-panel {
+  background: rgba(17, 24, 39, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+.glass-panel-interactive {
+  background: rgba(17, 24, 39, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-panel-interactive:hover {
+  border-color: rgba(99, 102, 241, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px -10px rgba(99, 102, 241, 0.2);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.6);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* Token chip styling */
+.token-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 6px;
+  font-family: monospace;
+  font-size: 0.75rem;
+  border-radius: 4px;
+  background: rgba(59, 130, 246, 0.12);
+  border: 1px solid rgba(59, 130, 246, 0.25);
+  color: #93c5fd;
+  margin: 2px;
+  transition: all 0.15s ease;
+}
+
+.token-chip:hover {
+  background: rgba(59, 130, 246, 0.25);
+  border-color: #60a5fa;
+  transform: scale(1.05);
+}
+
+/* Glowing Pulse Animation */
+@keyframes glow-pulse {
+  0%, 100% {
+    opacity: 0.6;
+    filter: drop-shadow(0 0 6px rgba(59, 130, 246, 0.4));
+  }
+  50% {
+    opacity: 1;
+    filter: drop-shadow(0 0 14px rgba(59, 130, 246, 0.8));
+  }
+}
+
+.animate-glow {
+  animation: glow-pulse 3s infinite;
+}

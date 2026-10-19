@@ -1,7 +1,14 @@
 .env
+.env*.local
 .venv/
 venv/
 __pycache__/
 *.pyc
-/node_modules
-
+*.pyo
+*.pyd
+node_modules/
+.next/
+out/
+build/
+dist/
+.DS_Store
