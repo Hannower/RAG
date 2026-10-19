@@ -29,8 +29,12 @@ app.add_middleware(
 
 UPLOAD_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "data", "uploads")
 INVOICES_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "data", "invoices")
+RAW_INVOICES_DIR = os.path.join(INVOICES_DIR, "raw")
+GOLD_INVOICES_DIR = os.path.join(INVOICES_DIR, "gold")
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 os.makedirs(INVOICES_DIR, exist_ok=True)
+os.makedirs(RAW_INVOICES_DIR, exist_ok=True)
+os.makedirs(GOLD_INVOICES_DIR, exist_ok=True)
 
 class QueryRequest(BaseModel):
     question: str
@@ -57,17 +61,17 @@ def get_documents(base_id: str = "default"):
 @app.post("/api/ingest/default-invoices")
 def ingest_default_invoices(base_id: str = "default"):
     """
-    Ingere os 4 PDFs fictícios de notas fiscais pré-gerados, retornando o trace didático completo.
+    Ingere os PDFs fictícios de notas fiscais armazenados em invoices/raw, movendo-os para invoices/gold após persistência bem-sucedida.
     """
     results = []
-    if not os.path.exists(INVOICES_DIR):
-        raise HTTPException(status_code=404, detail="Diretório de notas fiscais não encontrado.")
+    if not os.path.exists(RAW_INVOICES_DIR):
+        raise HTTPException(status_code=404, detail="Diretório de notas fiscais em raw não encontrado.")
 
-    files = [f for f in os.listdir(INVOICES_DIR) if f.endswith(".pdf")]
+    files = [f for f in os.listdir(RAW_INVOICES_DIR) if f.endswith(".pdf")]
     files.sort()
 
     for f in files:
-        file_path = os.path.join(INVOICES_DIR, f)
+        file_path = os.path.join(RAW_INVOICES_DIR, f)
         doc_id = f"doc_{f.replace('.pdf', '')}"
         trace = process_pdf_document(file_path, f, doc_id, base_id)
         results.append(trace)
@@ -83,8 +87,8 @@ async def upload_and_ingest(file: UploadFile = File(...), base_id: str = Form("d
     Permite upload de novos arquivos PDF e realiza todo o pipeline RAG didático.
     """
     doc_id = f"doc_{uuid.uuid4().hex[:8]}"
-    file_path = os.path.join(UPLOAD_DIR, f"{doc_id}_{file.filename}")
-    
+    file_path = os.path.join(RAW_INVOICES_DIR, f"{doc_id}_{file.filename}")
+
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
@@ -93,6 +97,25 @@ async def upload_and_ingest(file: UploadFile = File(...), base_id: str = Form("d
         "message": f"Documento '{file.filename}' processado com sucesso!",
         "document_processed": trace
     }
+
+
+def move_processed_file_to_gold(file_path: str) -> str:
+    """Move o PDF processado da fila raw para a pasta gold após persistência bem-sucedida."""
+    if not os.path.exists(file_path):
+        return file_path
+
+    destination = os.path.join(GOLD_INVOICES_DIR, os.path.basename(file_path))
+    os.makedirs(GOLD_INVOICES_DIR, exist_ok=True)
+
+    if os.path.abspath(file_path) == os.path.abspath(destination):
+        return destination
+
+    if os.path.exists(destination):
+        os.remove(destination)
+
+    shutil.move(file_path, destination)
+    return destination
+
 
 def process_pdf_document(file_path: str, filename: str, doc_id: str, base_id: str) -> Dict[str, Any]:
     """
@@ -131,6 +154,7 @@ def process_pdf_document(file_path: str, filename: str, doc_id: str, base_id: st
         "parsed_fields": parsed
     }
     db_store.save_document_and_chunks(doc_info, chunks, embeddings, base_id=base_id)
+    move_processed_file_to_gold(file_path)
 
     # Prepara objeto de observabilidade didática
     chunks_preview = []

@@ -209,9 +209,9 @@ def generate_pdf(data, output_path):
     print(f"Gerado: {output_path}")
 
 if __name__ == "__main__":
-    out_dir = os.path.join(os.path.dirname(__file__), "data", "invoices")
+    out_dir = os.path.join(os.path.dirname(__file__), "data", "invoices", "raw")
     os.makedirs(out_dir, exist_ok=True)
     for inv in INVOICES:
         path = os.path.join(out_dir, inv["filename"])
         generate_pdf(inv, path)
-    print("Todos os 4 PDFs fictícios foram criados com sucesso!")
+    print("Todos os 4 PDFs fictícios foram criados em data/invoices/raw com sucesso!")
