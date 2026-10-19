@@ -1,12 +1,26 @@
 import os
 import requests
+from pathlib import Path
 from typing import Dict, Any, List, Optional
 from dotenv import load_dotenv
 
+# Carrega arquivos .env ou env na raiz do projeto ou diretório backend
+_ROOT_DIR = Path(__file__).resolve().parent.parent.parent
+load_dotenv(_ROOT_DIR / ".env")
+load_dotenv(_ROOT_DIR / "env")
+load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 load_dotenv()
 
-OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 OPENROUTER_MODEL = "openrouter/auto"
+
+def get_openrouter_api_key() -> Optional[str]:
+    # Tenta recarregar se ainda não estiver nas variáveis de ambiente
+    key = os.getenv("OPENROUTER_API_KEY")
+    if not key:
+        load_dotenv(_ROOT_DIR / ".env")
+        load_dotenv(_ROOT_DIR / "env")
+        key = os.getenv("OPENROUTER_API_KEY")
+    return key
 
 SYSTEM_INSTRUCTION = """Você é o Assistente Didático RAG + Hannower, especializado em responder perguntas estritamente com base nos documentos recuperados do banco vetorial.
 
@@ -46,14 +60,15 @@ def call_llm(augmented_prompt: str) -> Dict[str, Any]:
     Comunica com o OpenRouter usando o modelo configurado em rag.txt (openrouter/auto).
     As credenciais são mantidas estritamente no backend.
     """
-    if not OPENROUTER_API_KEY:
+    api_key = get_openrouter_api_key()
+    if not api_key:
         return {
             "error": "Chave OPENROUTER_API_KEY não configurada no .env",
             "answer": "Erro de configuração: Chave OpenRouter não encontrada."
         }
 
     headers = {
-        "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+        "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json",
         "HTTP-Referer": "https://rag-teophilo.local",
         "X-Title": "RAG Didatico Teophilo"

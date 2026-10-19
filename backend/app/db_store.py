@@ -2,10 +2,15 @@ import os
 import json
 import math
 import re
+from pathlib import Path
 from typing import List, Dict, Any, Optional
 from dotenv import load_dotenv
 from supabase import create_client, Client
 
+_ROOT_DIR = Path(__file__).resolve().parent.parent.parent
+load_dotenv(_ROOT_DIR / ".env")
+load_dotenv(_ROOT_DIR / "env")
+load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 load_dotenv()
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")
