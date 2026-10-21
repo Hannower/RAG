@@ -451,6 +451,28 @@ export default function RAGDashboard() {
                 </button>
                 <button
                   onClick={() => {
+                    const q = "Qual o valor total da soma das notas fiscais?";
+                    setQuestion(q);
+                    handleQuery(q);
+                  }}
+                  className="text-xs bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/20 rounded-lg px-2.5 py-1 transition font-medium"
+                  title="Testa a agregação matemática e soma total de todas as notas"
+                >
+                  📊 Soma de Todas as Notas
+                </button>
+                <button
+                  onClick={() => {
+                    const q = "Quais notas possuem mais de sete mil reais?";
+                    setQuestion(q);
+                    handleQuery(q);
+                  }}
+                  className="text-xs bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/20 rounded-lg px-2.5 py-1 transition font-medium"
+                  title="Testa o filtro numérico comparativo entre todas as notas"
+                >
+                  🔍 Notas &gt; R$ 7.000
+                </button>
+                <button
+                  onClick={() => {
                     const q = "Qual é a capital da França?";
                     setQuestion(q);
                     handleQuery(q);

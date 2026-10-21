@@ -29,6 +29,10 @@ DIRETRIZES FUNDAMENTAIS:
 2. Nunca invente dados, nomes, datas, itens ou valores.
 3. Se o contexto não contiver a informação necessária para responder à pergunta, responda exatamente: "Sem dados disponiveis na base".
 4. Seja didático, objetivo e claro em português. Cite de forma explicativa os números das notas fiscais e valores relevantes quando responder.
+5. Quando a pergunta solicitar soma, total, contagem, comparação ou filtro de valores (ex: notas com mais de X reais, soma das notas fiscais, etc.):
+   - Analise atentamente os dados de cada nota fiscal presente no contexto.
+   - Realize as operações aritméticas ou comparações com exatidão.
+   - Detalhe a resposta listando os números das notas fiscais correspondentes e seus respectivos valores, além do resultado final calculado.
 """
 
 def build_augmented_prompt(question: str, retrieved_chunks: List[Dict[str, Any]]) -> str:

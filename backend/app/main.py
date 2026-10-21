@@ -241,7 +241,7 @@ def query_rag(req: QueryRequest):
             "tokenization": question_token_data,
             "embedding_preview": question_embedding[:6],
             "embedding_dimension": len(question_embedding),
-            "top_k": top_k,
+            "top_k": max(top_k, len(retrieved_chunks)),
             "candidates_found": len(retrieved_chunks),
             "candidates": retrieved_chunks
         },
